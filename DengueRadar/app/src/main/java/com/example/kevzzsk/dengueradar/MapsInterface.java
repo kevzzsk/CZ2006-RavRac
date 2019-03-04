@@ -31,6 +31,10 @@ public class MapsInterface extends FragmentActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
 
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private boolean mLocationPermissionGranted = false;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
 
 
 
@@ -58,10 +62,7 @@ public class MapsInterface extends FragmentActivity implements OnMapReadyCallbac
 
     }
 
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private boolean mLocationPermissionGranted = false;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+
     private void getLocationPermission(){
         String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
 
@@ -71,6 +72,8 @@ public class MapsInterface extends FragmentActivity implements OnMapReadyCallbac
             }else {
                 ActivityCompat.requestPermissions(this,permission,LOCATION_PERMISSION_REQUEST_CODE);
             }
+        }else {
+            ActivityCompat.requestPermissions(this,permission,LOCATION_PERMISSION_REQUEST_CODE);
         }
 
     }
@@ -90,8 +93,15 @@ public class MapsInterface extends FragmentActivity implements OnMapReadyCallbac
                     }
                     mLocationPermissionGranted = true;
                     //init map
+
                 }
         }
+    }
+
+    private void initMap(){
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(MapsInterface.this);
     }
 
 
@@ -99,10 +109,15 @@ public class MapsInterface extends FragmentActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_interface);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+
+        getLocationPermission();
+        Log.d(TAG, "onCreate: Permission granted");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(MapsInterface.this);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
     }
 
 
