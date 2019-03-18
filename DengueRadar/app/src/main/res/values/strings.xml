@@ -2,4 +2,6 @@
     <string name="app_name">DengueRadar</string>
     <string name="title_activity_maps_interface">Map</string>
     <string name="button">Button</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
