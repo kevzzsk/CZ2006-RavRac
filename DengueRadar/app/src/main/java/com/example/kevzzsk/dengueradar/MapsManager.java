@@ -2,14 +2,16 @@ package com.example.kevzzsk.dengueradar;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.Intent;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +27,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsInterface extends Fragment implements OnMapReadyCallback {
+public class MapsManager extends FragmentActivity implements OnMapReadyCallback {
+    private GoogleMap mMap;
 
-    GoogleMap mMap;
     private static final String TAG = "MenuInterface";
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
@@ -39,7 +41,7 @@ public class MapsInterface extends Fragment implements OnMapReadyCallback {
     public boolean isServicesOK(){
         Log.d(TAG,"isServicesOK: Checking google services version");
 
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getActivity());
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
 
         if (available == ConnectionResult.SUCCESS){
             // everything is fine
@@ -50,11 +52,11 @@ public class MapsInterface extends Fragment implements OnMapReadyCallback {
             // an error occur but can be resolved
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
 
-            Dialog dialog =GoogleApiAvailability.getInstance().getErrorDialog(getActivity(),available,ERROR_DIALOG_REQUEST);
+            Dialog dialog =GoogleApiAvailability.getInstance().getErrorDialog(this,available,ERROR_DIALOG_REQUEST);
             ((Dialog) dialog).show();
 
         }else{
-            Toast.makeText(getActivity(), "you cannot make map request",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "you cannot make map request",Toast.LENGTH_SHORT).show();
         }
         return false;
 
@@ -64,14 +66,14 @@ public class MapsInterface extends Fragment implements OnMapReadyCallback {
     private void getLocationPermission(){
         String[] permission = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
 
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionGranted = true;
             }else {
-                ActivityCompat.requestPermissions(getActivity(),permission,LOCATION_PERMISSION_REQUEST_CODE);
+                ActivityCompat.requestPermissions(this,permission,LOCATION_PERMISSION_REQUEST_CODE);
             }
         }else {
-            ActivityCompat.requestPermissions(getActivity(),permission,LOCATION_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this,permission,LOCATION_PERMISSION_REQUEST_CODE);
         }
 
     }
@@ -95,28 +97,35 @@ public class MapsInterface extends Fragment implements OnMapReadyCallback {
                 }
         }
     }
-    public MapsInterface(){
 
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.map_fragment,container,false);
-        Log.d("MapsInterface", "onCreateView: hi");
-
-        return v;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // INIT MAP
-        getLocationPermission();
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+    //not used currently
+    private void initMap(){
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.map_fragment);
+        getLocationPermission();
+        Log.d(TAG, "onCreate: Permission granted");
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+    }
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -127,4 +136,7 @@ public class MapsInterface extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sg));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
     }
+    // api key AIzaSyC023WrXGzzcNAY3yoAXj1iT2cRnEypGr8
+
+
 }
