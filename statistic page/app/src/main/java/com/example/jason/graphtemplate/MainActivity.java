@@ -1,18 +1,13 @@
-package com.example.kevzzsk.dengueradar;
+package com.example.jason.graphtemplate;
 
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -21,11 +16,11 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.OnDataPointTapListener;
 import com.jjoe64.graphview.series.Series;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.text.*;
 
-public class StatisticInterface extends Fragment {
+public class MainActivity extends AppCompatActivity {
 
     private LineGraphSeries<DataPoint> series;
     private int[] monthlyData = createDummyData(STATE.MONTHLY);
@@ -35,7 +30,20 @@ public class StatisticInterface extends Fragment {
     }
     private static STATE state;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
+        //initialize switch
+        Switch mySwitch = findViewById(R.id.switch1);
+        mySwitch.setChecked(true);
+
+        setStateToMonthly();
+        initializeGraph();
+        drawGraph(monthlyData);
+        displayText(monthlyData[monthlyData.length-1], monthlyData.length, state);
+    }
 
     public void switchSelected(boolean isChecked){
         if(!isChecked){
@@ -50,17 +58,17 @@ public class StatisticInterface extends Fragment {
 
     private void setStateToMonthly(){
         state = STATE.MONTHLY;
-        TextView textViewWeekly = getView().findViewById(R.id.textViewWeekly);
+        TextView textViewWeekly = findViewById(R.id.textViewWeekly);
         textViewWeekly.setTextColor(getResources().getColor(R.color.textDefault));
-        TextView textViewMonthly = getView().findViewById(R.id.textViewMonthly);
+        TextView textViewMonthly = findViewById(R.id.textViewMonthly);
         textViewMonthly.setTextColor(getResources().getColor(R.color.textSelected));
     }
 
     private void setStateToWeekly(){
         state = STATE.WEEKLY;
-        TextView textViewWeekly = getView().findViewById(R.id.textViewWeekly);
+        TextView textViewWeekly = findViewById(R.id.textViewWeekly);
         textViewWeekly.setTextColor(getResources().getColor(R.color.textSelected));
-        TextView textViewMonthly = getView().findViewById(R.id.textViewMonthly);
+        TextView textViewMonthly = findViewById(R.id.textViewMonthly);
         textViewMonthly.setTextColor(getResources().getColor(R.color.textDefault));
     }
 
@@ -71,7 +79,7 @@ public class StatisticInterface extends Fragment {
 
     private void displayDate(int x, STATE state){
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd");
-        TextView textView = getView().findViewById(R.id.textViewDate);
+        TextView textView = findViewById(R.id.textViewDate);
         String text = "";
         if(state == STATE.WEEKLY){
             Date currentDate = new Date();
@@ -142,7 +150,7 @@ public class StatisticInterface extends Fragment {
     }
 
     private void displayNoOfCases(int noOfCases){
-        TextView textView = getView().findViewById(R.id.textViewNum);
+        TextView textView = findViewById(R.id.textViewNum);
         String text = "";
         if(noOfCases < 10){
             text+=" ";
@@ -179,7 +187,7 @@ public class StatisticInterface extends Fragment {
 
     public void initializeGraph(){
         //create graph object
-        GraphView graph = getView().findViewById(R.id.graph);
+        GraphView graph = findViewById(R.id.graph);
 
         //set padding
         graph.getGridLabelRenderer().setPadding(30);
@@ -188,7 +196,7 @@ public class StatisticInterface extends Fragment {
         //graph.getViewport().setScalable(true);
 
         //set on switch listener
-        Switch mySwitch = getView().findViewById(R.id.switch1);
+        Switch mySwitch = findViewById(R.id.switch1);
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
@@ -202,7 +210,7 @@ public class StatisticInterface extends Fragment {
         int maxY, maxX, minY, minX;
 
         //clear old graph if any
-        GraphView graph = getView().findViewById(R.id.graph);
+        GraphView graph = findViewById(R.id.graph);
         graph.removeAllSeries();
 
         minY = 0;
@@ -239,7 +247,7 @@ public class StatisticInterface extends Fragment {
 //                Log.d("debug", "onTap: " + (int)dataPoint.getX() + " " + (int)dataPoint.getY());
 //            }
             public void onTap(Series series, DataPointInterface dataPoint){
-                displayText((int)dataPoint.getY(), (int)dataPoint.getX(), StatisticInterface.state); //MainActivity.state
+                displayText((int)dataPoint.getY(), (int)dataPoint.getX(), MainActivity.state);
             }
         });
 
@@ -254,22 +262,4 @@ public class StatisticInterface extends Fragment {
         graph.addSeries(series);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.statistic_page,container,false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //initialize switch
-        Switch mySwitch = getView().findViewById(R.id.switch1);
-        mySwitch.setChecked(true);
-
-        setStateToMonthly();
-        initializeGraph();
-        drawGraph(monthlyData);
-        displayText(monthlyData[monthlyData.length-1], monthlyData.length, state);
-    }
 }

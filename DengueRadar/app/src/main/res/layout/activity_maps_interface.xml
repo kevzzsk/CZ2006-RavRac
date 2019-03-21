@@ -23,11 +23,13 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:elevation="4dp"
             />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/fragment_container"
             />
+
     </LinearLayout>
     
     <android.support.design.widget.NavigationView
