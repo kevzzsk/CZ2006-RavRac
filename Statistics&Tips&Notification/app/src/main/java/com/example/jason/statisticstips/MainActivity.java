@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
         //initialize toTipsButton
         configureToTipsButton();
+
+        //initialize notify button
+        configureNotifyButton();
     }
 
     public void switchSelected(boolean isChecked){
@@ -275,6 +278,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 startActivity(new Intent(MainActivity.this, TipsActivity.class));
+            }
+
+        });
+    }
+
+    //send notification
+    public void configureNotifyButton() {
+        Button notifyButton = findViewById(R.id.sendNotification);
+        notifyButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                NotificationControl notificationControl = new NotificationControl(MainActivity.this);
+                notificationControl.isAboveThreshold(5);
             }
 
         });
