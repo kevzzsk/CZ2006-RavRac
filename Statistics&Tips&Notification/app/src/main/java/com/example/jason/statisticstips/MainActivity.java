@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 NotificationControl notificationControl = new NotificationControl(MainActivity.this);
-                notificationControl.isAboveThreshold(5);
+                notificationControl.sendNotification();
             }
 
         });

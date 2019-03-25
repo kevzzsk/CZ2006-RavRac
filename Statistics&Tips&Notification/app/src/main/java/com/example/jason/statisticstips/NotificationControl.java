@@ -1,7 +1,6 @@
 package com.example.jason.statisticstips;
 
-import android.app.Activity;
-import android.app.Notification;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,9 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 
-import static android.app.Notification.VISIBILITY_PUBLIC;
 
 
 public class NotificationControl {
@@ -23,21 +20,21 @@ public class NotificationControl {
         this.mContext = mContext;
     }
 
-    public static final int THRESHOLD = 3;
+//    public static final int THRESHOLD = 3;
 
-    public boolean isAboveThreshold(int num) {
-        if(num > THRESHOLD) {
-            sendNotification(num);
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+//    public boolean isAboveThreshold(int num) {
+//        if(num > THRESHOLD) {
+//            sendNotification(num);
+//            return true;
+//        }
+//        else {
+//            return false;
+//        }
+//    }
 
-    private void sendNotification(int num) {
+    public void sendNotification() {
         createNotificationChannel();
-        createNotification(num);
+        createNotification();
     }
 
     private void createNotificationChannel() {
@@ -55,10 +52,10 @@ public class NotificationControl {
         }
     }
 
-    private void createNotification(int num) {
+    private void createNotification() {
         Intent intent = new Intent(mContext, TipsActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
-        String title = num + " dengue cases near you";
+        String title = "You are near to a dengue cluster!";
         String message = "Click to view tips on how to prevent dengue.";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId)
                 .setSmallIcon(R.drawable.alert)
