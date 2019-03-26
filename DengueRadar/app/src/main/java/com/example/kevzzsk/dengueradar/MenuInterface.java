@@ -81,9 +81,17 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
         //set MapInterface to be default start up page
         // savedInstanceState ensures that rotating device will not switch back to default page
         if(savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new MapsInterface()).commit();
-            navigationView.setCheckedItem(R.id.nav_map);
+            //go to statistics if user click on notification
+            if(getIntent().getStringExtra("action").equals("goToTipsPage")) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new TipsInterface()).commit();
+                navigationView.setCheckedItem(R.id.nav_tips);
+            }
+            else{
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new MapsInterface()).commit();
+                navigationView.setCheckedItem(R.id.nav_map);
+            }
         }
 
     }
