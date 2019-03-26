@@ -17,7 +17,7 @@ import android.view.View;
 
 
 public class MenuInterface extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = "MenuInteface";
+    private static final String TAG = "MenuInterface";
     private DrawerLayout drawer;
 
 
