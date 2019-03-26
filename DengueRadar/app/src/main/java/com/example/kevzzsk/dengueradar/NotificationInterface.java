@@ -11,11 +11,11 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 
-public class NotificationControl {
+public class NotificationInterface {
     Context mContext;
     String channelId = "channel1";
 
-    public NotificationControl(Context mContext) {
+    public NotificationInterface(Context mContext) {
         this.mContext = mContext;
     }
 
