@@ -1,6 +1,7 @@
 package com.example.kevzzsk.dengueradar;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -26,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -36,6 +39,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -64,7 +69,7 @@ import java.util.List;
 
 
 
-public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowClickListener,OnMapReadyCallback,GoogleMap.OnInfoWindowCloseListener,LocationListener {
+public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowClickListener,OnMapReadyCallback,GoogleMap.OnInfoWindowCloseListener {
     // use getActivity() to replace this as the context
     // This is due to MapsInterface being just a fragment, hence context
     // need to be taken from the "parent" (MenuInterface)
@@ -72,6 +77,10 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
     GoogleMap mMap;
     MapsManager manager;
     List<List> allDengueCluster = new ArrayList<>();
+    private LocationManager locManager;
+    private LocationListener locListener;
+    private Location mobileLocation;
+    private String provider;
 
     private static final String TAG = "MapsInterface";
 
@@ -115,17 +124,29 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
 
         manager.initializeUserLocation(mMap);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setMapToolbarEnabled(true);
+        alignRecenterButton();
+
         createGeoJsonLayer();
 
+
+    }
+
+
+    private void alignRecenterButton(){
+        //
+        View locationButton = ((View) getActivity().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        // position on right bottom
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 30, 30);
     }
 
 
 
     public void createGeoJsonLayer(){
         // ADD GeoJSON Layer
-        try {
-            GeoJsonLayer layer = new GeoJsonLayer(mMap, manager.getGeoJson(),getActivity());
+            GeoJsonLayer layer = manager.getLayer(mMap);
             GeoJsonPolygonStyle polygonStyle = layer.getDefaultPolygonStyle();
             polygonStyle.setFillColor(ContextCompat.getColor(getActivity(),R.color.colorAccentTransparent));
             polygonStyle.setStrokeColor(Color.parseColor("#80000000"));
@@ -154,44 +175,9 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
                 }
             });
 
-            // get all the coordinates of dengue cluster(polygons)
-            for (GeoJsonFeature feature : layer.getFeatures()) {
-                //Log.d(TAG, "GeoJson: "+ getCoordinates(feature.getGeometry()));
-                allDengueCluster.add(getCoordinates(feature.getGeometry()));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
     }
 
-    public boolean isDengueNearby(Location newLocation){
-        // check against all the coordinates of dengue cluster
-        // calculate distance from user to all center of dengue cluster
-        // radius of 1km
-
-        LatLng userLoc = new LatLng(newLocation.getLatitude(),newLocation.getLongitude());
-
-        for(List<LatLng> polygon: allDengueCluster){
-            for(LatLng vertex: polygon){
-                // returns distance in meter
-                if(SphericalUtil.computeDistanceBetween(vertex,userLoc) >= 1000){
-                    // dengue cluster is within 1km
-                    Log.d(TAG, "isDengueNearby: True");
-                }
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if(location!= null) {
-            Log.d(TAG, "onLocationChanged: Location changed!");
-            isDengueNearby(location);
-        }
-    }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
@@ -205,7 +191,7 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         }
     }
 
-    private List<LatLng> getCoordinates(Geometry geometry) {
+    protected static List<LatLng> getCoordinates(Geometry geometry) {
 
         List<LatLng> coordinates = new ArrayList<>();
 
@@ -227,7 +213,7 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         return coordinates;
     }
 
-    private LatLng getPolygonCenterPoint(List<LatLng> polygonPointsList){
+    protected static LatLng getPolygonCenterPoint(List<LatLng> polygonPointsList){
         LatLng centerLatLng = null;
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for(int i = 0 ; i < polygonPointsList.size() ; i++)
@@ -250,7 +236,7 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
             manager.stopLocationUpdate();
         }
     }
-    
+
 
     public void displaySearchBar(){
         // search_Bar
