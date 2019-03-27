@@ -107,8 +107,8 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
     @SuppressLint("MissingPermission")
     public void initializeUserLocation(GoogleMap mMap){
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000); // two minute interval
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(30000); // two minute interval
+        mLocationRequest.setFastestInterval(30000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // Create LocationSettingsRequest object using location request

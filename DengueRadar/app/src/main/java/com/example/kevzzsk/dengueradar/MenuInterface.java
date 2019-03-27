@@ -20,8 +20,6 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
     private static final String TAG = "MenuInterface";
     private DrawerLayout drawer;
 
-
-
     @Override
     public void onBackPressed() {
         if(drawer.isDrawerOpen(GravityCompat.START)){
