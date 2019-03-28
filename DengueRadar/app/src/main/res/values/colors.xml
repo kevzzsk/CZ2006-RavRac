@@ -7,5 +7,5 @@
     <color name="whiteLessB">#FFFFF0</color>
     <color name="whiteTrans">#CCFFFFFF</color>
     <color name="textDefault">#05A5CC</color>
-    <color name="textSelected">#0486A5</color>
+    <color name="textNotSelected">#0486A5</color>
 </resources>

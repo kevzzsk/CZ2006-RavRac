@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "298469542381",
+    "firebase_url": "https://dengueradar-rr.firebaseio.com",
+    "project_id": "dengueradar-rr",
+    "storage_bucket": "dengueradar-rr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298469542381:android:3f287ac1c5fac376",
+        "android_client_info": {
+          "package_name": "com.example.firebase12"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298469542381-acmo1b0p4iur07s6uvm1cunu7cr56bg1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.firebase12",
+            "certificate_hash": "38e9cb5bf8f04223a01d6c0df97f6fed01db43ce"
+          }
+        },
+        {
+          "client_id": "298469542381-hjor8sh3e3uiei2goj04vfpltncjfei7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcwRiCfCNxg6f7vjG6CFF6mwayG27TaEU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298469542381-hjor8sh3e3uiei2goj04vfpltncjfei7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298469542381:android:6091939f82489382",
+        "android_client_info": {
+          "package_name": "com.example.kevzzsk.dengueradar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298469542381-j0veq89tp9a6k831donjf2nqb5a12gak.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kevzzsk.dengueradar",
+            "certificate_hash": "38e9cb5bf8f04223a01d6c0df97f6fed01db43ce"
+          }
+        },
+        {
+          "client_id": "298469542381-hjor8sh3e3uiei2goj04vfpltncjfei7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcwRiCfCNxg6f7vjG6CFF6mwayG27TaEU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298469542381-hjor8sh3e3uiei2goj04vfpltncjfei7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

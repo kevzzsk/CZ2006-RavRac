@@ -8,8 +8,8 @@
 
     <com.jjoe64.graphview.GraphView
         android:id="@+id/graph"
-        android:layout_width="365dp"
-        android:layout_height="323dp"
+        android:layout_width="360dp"
+        android:layout_height="404dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
@@ -34,9 +34,10 @@
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:includeFontPadding="false"
-        android:text=" 3"
+        android:text=" "
         android:textColor="@color/textDefault"
         android:textSize="130sp"
+        android:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
@@ -59,7 +60,7 @@
         android:layout_height="53dp"
         android:layout_marginEnd="36dp"
         android:layout_marginRight="36dp"
-        android:text="Aug"
+        android:text=""
         android:textColor="@color/textDefault"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="@+id/textViewNum"
@@ -92,7 +93,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:text="WEEKLY"
-        android:textColor="@color/textSelected"
+        android:textColor="@color/textNotSelected"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/switch1"
         app:layout_constraintEnd_toStartOf="@+id/switch1" />
