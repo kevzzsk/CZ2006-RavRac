@@ -52,7 +52,7 @@ public class TipsInterface extends Fragment {
     }
 
     public void startLoadingTips(){
-        new DatabaseViewer(true, this);
+        new DatabaseViewer(0, this);
     }
 
 
