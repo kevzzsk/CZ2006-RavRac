@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#8B0335</color>
+    <color name="colorPrimaryDark">#582638</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccentTransparent">#4DD81B60</color>
+    <color name="whiteLessB">#FFFFF0</color>
+    <color name="whiteTrans">#CCFFFFFF</color>
+    <color name="textDefault">#05A5CC</color>
+    <color name="textSelected">#0486A5</color>
+</resources>
