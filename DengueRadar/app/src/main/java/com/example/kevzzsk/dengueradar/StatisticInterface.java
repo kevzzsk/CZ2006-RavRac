@@ -70,6 +70,48 @@ public class StatisticInterface extends Fragment {
         displayDate(x, state);
     }
 
+    private String getMonthString(String month){
+        switch(month){
+            case "01":
+                month = "Jan";
+                break;
+            case "02":
+                month = "Feb";
+                break;
+            case "03":
+                month = "Mar";
+                break;
+            case "04":
+                month = "Apr";
+                break;
+            case "05":
+                month = "May";
+                break;
+            case "06":
+                month = "Jun";
+                break;
+            case "07":
+                month = "Jul";
+                break;
+            case "08":
+                month = "Aug";
+                break;
+            case "09":
+                month = "Sep";
+                break;
+            case "10":
+                month = "Oct";
+                break;
+            case "11":
+                month = "Nov";
+                break;
+            case "12":
+                month = "Dec";
+                break;
+        }
+        return month;
+    }
+
     private void displayDate(int x, STATE state){
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd");
         TextView textView = getView().findViewById(R.id.textViewDate);
@@ -83,7 +125,11 @@ public class StatisticInterface extends Fragment {
             Date startDate = c.getTime();
             c.add(Calendar.DATE, 6);
             Date endDate = c.getTime();
-            text = "      " + dateFormat.format(startDate) +"      \n" + "~" + "\n      " + dateFormat.format(endDate) + "      ";
+            String month1 = dateFormat.format(startDate).substring(0, 2);
+            month1 = getMonthString(month1);
+            String month2 = dateFormat.format(endDate).substring(0, 2);
+            month2 = getMonthString(month2);
+            text = "" + month1 + dateFormat.format(startDate).substring(2, 5) + "\n" + "~" + "\n" + month2 + dateFormat.format(endDate).substring(2, 5) + "";
         }
         else{
             Date currentDate = new Date();
@@ -135,10 +181,10 @@ public class StatisticInterface extends Fragment {
         }
         textView.setText(text);
         if(state == STATE.MONTHLY){
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 70);
         }
         else{
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
         }
     }
 

@@ -14,7 +14,12 @@ public class TipDetailsInterface extends AppCompatActivity {
         setContentView(R.layout.activity_tipdetail);
         Tip tip = (Tip)getIntent().getSerializableExtra("tip");
         displayHeading(tip.heading);
-        displayContent(tip.content);
+        String content = tip.content.replace("\\n", "\n")+"\n\n\n";
+        content = content.replace("\n ", "\n");
+        displayContent(content);
+
+        //test
+        Log.d("content", tip.content.replace('\\', '\\'));
         displayImage(tip.img);
     }
 
