@@ -30,7 +30,6 @@ import java.util.concurrent.CountDownLatch;
 
 public class DatabaseViewer {
 
-    private boolean queryTips;
     private ArrayList<Tip> tipsArray = new ArrayList<>();
     private ArrayList<DengueStatistic> statsArray = new ArrayList<>();
 
@@ -39,7 +38,6 @@ public class DatabaseViewer {
     private CollectionReference StatsReference = db.collection("Statistics");
 
     public DatabaseViewer(boolean queryTips, Object object){
-        this.queryTips = queryTips;
         if(queryTips){
             loadTips((TipsInterface)object);
         }
