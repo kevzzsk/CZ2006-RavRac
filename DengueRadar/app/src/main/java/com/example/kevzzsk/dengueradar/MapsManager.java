@@ -4,14 +4,19 @@ package com.example.kevzzsk.dengueradar;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -48,31 +53,38 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.Context.LOCATION_SERVICE;
 
-public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCallback,LocationListener {
+public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCallback, LocationListener {
 
     private static final String TAG = "MapsManager";
     Activity mContext;
 
-    private LatLng userLoc;
+    private static final int LOCATION_UPDATE_FREQUENCY = 5000; //5 s
+
 
     LocationRequest mLocationRequest;
     Location mLastLocation;
     Marker mCurrLocationMarker;
     FusedLocationProviderClient mFusedLocationClient;
-    private LocationManager locationManager;
-    public LocationListener locationListener;
     private boolean mLocationPermissionGranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private List<List> allDengueCluster = new ArrayList<>();
-    CircleOptions circleOptions;
+    PendingIntent mRequestLocationUpdatesPendingIntent;
+    Intent mRequestLocationUpdatesIntent;
+    public BackgroundService gpsService;
 
-    public MapsManager(Activity context){
+    private boolean notificationSent;
+    NotificationInterface notificationInterface;
+    private  boolean isServicebounded = false;
+
+    public MapsManager(Activity context) {
         mContext = context;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
+    public void setNotificationSent(boolean b){
+        notificationSent = b;
+    }
 
 
     public FusedLocationProviderClient getmFusedLocationClient() {
@@ -83,11 +95,11 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST_CODE:
-                if(grantResults.length > 0){
-                    for (int i=0 ; i<grantResults.length; i++){
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionGranted = false;
                             return;
                         }
@@ -99,16 +111,42 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
         }
     }
 
-
-    public LocationCallback getmLocationCallback() {
-        return mLocationCallback;
+    public ServiceConnection getServiceConnection() {
+        return serviceConnection;
     }
 
-    @SuppressLint("MissingPermission")
-    public void initializeUserLocation(GoogleMap mMap){
+    public Intent getmRequestLocationUpdatesIntent() {
+        return mRequestLocationUpdatesIntent;
+    }
+
+    public boolean isServicebounded() {
+        return isServicebounded;
+    }
+
+
+    // SERVICE Connection
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            String name = className.getClassName();
+            if (name.endsWith("BackgroundService")) {
+                gpsService = ((BackgroundService.LocationServiceBinder) service).getService();
+
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            if (className.getClassName().equals("BackgroundService")) {
+                gpsService = null;
+                isServicebounded=false;
+            }
+        }
+    };
+
+
+    public void initializeUserLocation() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(30000); // two minute interval
-        mLocationRequest.setFastestInterval(30000);
+        mLocationRequest.setInterval(LOCATION_UPDATE_FREQUENCY); // interval is in ms
+        mLocationRequest.setFastestInterval(LOCATION_UPDATE_FREQUENCY);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // Create LocationSettingsRequest object using location request
@@ -121,31 +159,39 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
         SettingsClient settingsClient = LocationServices.getSettingsClient(mContext);
         settingsClient.checkLocationSettings(locationSettingsRequest);
 
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        mFusedLocationClient.requestLocationUpdates(mLocationRequest, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        // do work here
-                        onLocationChanged(locationResult.getLastLocation());
-                    }
-                },
-                Looper.myLooper());
+
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(mContext,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
-                mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                mMap.setMyLocationEnabled(true);
+
+                // create the INTENT to use BackgroundService to handle results
+                mRequestLocationUpdatesIntent = new Intent(mContext, BackgroundService.class);
+                mContext.startService(mRequestLocationUpdatesIntent);
+                mContext.bindService(mRequestLocationUpdatesIntent,serviceConnection,Context.BIND_AUTO_CREATE);
+                isServicebounded = true;
+
+                // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+                mFusedLocationClient.requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                // do work here
+                                onLocationChanged(locationResult.getLastLocation());
+                            }
+                        },
+                        Looper.myLooper());
+
+                //mMap.setMyLocationEnabled(true);
             } else {
                 //Request Location Permission
                 checkLocationPermission();
             }
-        }
+
+            }
         else {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-            mMap.setMyLocationEnabled(true);
+            //mMap.setMyLocationEnabled(true);
         }
     }
 
@@ -162,7 +208,7 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(mContext)
                         .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setMessage("For us to deliver a richer experience, we need your Location permission, please accept to use location functionality")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -174,6 +220,7 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
                         })
                         .create()
                         .show();
+
 
 
             } else {
@@ -234,8 +281,6 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged: Location changed!");
-
-        userLoc = new LatLng(location.getLatitude(),location.getLongitude());
         Toast.makeText(mContext,"Location is now "+ String.valueOf(location.getLatitude())+" "+String.valueOf(location.getLongitude()),Toast.LENGTH_SHORT).show();
         /*circleOptions = new CircleOptions()
                 .center(userLoc)
@@ -259,11 +304,18 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
                     Log.d(TAG, "isDengueNearby: True");
                     Log.d(TAG, "isDengueNearby: " + SphericalUtil.computeDistanceBetween(vertex,userLoc));
                     Toast.makeText(mContext,String.valueOf(SphericalUtil.computeDistanceBetween(vertex,userLoc)),Toast.LENGTH_SHORT).show();
+                    if(notificationSent == false) {
+                        notificationInterface = new NotificationInterface(mContext);
+                        notificationInterface.sendNotification();
+                        notificationSent = true;
+                    }
                     return true;
                 }
+
             }
         }
         Log.d(TAG, "isDengueNearby: False");
+        notificationSent = false;
         return false;
     }
 

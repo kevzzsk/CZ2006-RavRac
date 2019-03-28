@@ -52,17 +52,27 @@ public class NotificationInterface {
     }
 
     private void createNotification() {
+
+        // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(mContext, MenuInterface.class);
+        // set activity to start in a new, empty task
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("action","goToTipPage");
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+        // create PendingIntent
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
         String title = "You are near to a dengue cluster!";
         String message = "Click to view tips on how to prevent dengue.";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId)
                 .setSmallIcon(R.drawable.alert)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setOnlyAlertOnce(true)
+                .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
                 //.setVisibility(VISIBILITY_PUBLIC);
 
