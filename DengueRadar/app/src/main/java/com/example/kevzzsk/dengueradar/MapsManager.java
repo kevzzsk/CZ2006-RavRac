@@ -63,11 +63,29 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
     private List<List> allDengueCluster = new ArrayList<>();
     PendingIntent mRequestLocationUpdatesPendingIntent;
     Intent mRequestLocationUpdatesIntent;
-    public BackgroundService gpsService;
+    private BackgroundService gpsService;
 
     private boolean notificationSent;
     NotificationInterface notificationInterface;
     private  boolean isServicebounded = false;
+
+    // SERVICE Connection
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            String name = className.getClassName();
+            if (name.endsWith("BackgroundService")) {
+                gpsService = ((BackgroundService.LocationServiceBinder) service).getService();
+
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            if (className.getClassName().equals("BackgroundService")) {
+                gpsService = null;
+                isServicebounded=false;
+            }
+        }
+    };
 
     public MapsManager(Activity context) {
         mContext = context;
@@ -111,23 +129,7 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
     }
 
 
-    // SERVICE Connection
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            String name = className.getClassName();
-            if (name.endsWith("BackgroundService")) {
-                gpsService = ((BackgroundService.LocationServiceBinder) service).getService();
 
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            if (className.getClassName().equals("BackgroundService")) {
-                gpsService = null;
-                isServicebounded=false;
-            }
-        }
-    };
 
 
     public void initializeUserLocation() {
