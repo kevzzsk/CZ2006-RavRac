@@ -1,67 +1,49 @@
 package com.example.kevzzsk.dengueradar;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.Geometry;
-import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
 import com.google.maps.android.data.geojson.GeoJsonPolygon;
 import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
 
-
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,7 +56,6 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
 
     GoogleMap mMap;
     MapsManager manager;
-    List<List> allDengueCluster = new ArrayList<>();
 
     private static final String TAG = "MapsInterface";
 
@@ -124,24 +105,17 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
             //                                          int[] grantResults)
             mMap.setMyLocationEnabled(true);
         }
-       //mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
+        // set recenter button to bottom right of the map
         alignRecenterButton();
 
+        // apply a geojson layer onto the map
+        // project dengue cluster onto the map
         createGeoJsonLayer();
-
-
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        //mMap.setMyLocationEnabled(true);
-    }
 
     private void alignRecenterButton(){
-        //
+
         View locationButton = ((View) getActivity().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
         RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
         // position on right bottom
@@ -164,8 +138,6 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onFeatureClick(Feature feature) {
-                    //Toast.makeText(getActivity(),"Clicked"+feature.getProperty("Name"),Toast.LENGTH_SHORT).show();
-                    // add marker to geojson layer
 
                     List<LatLng> coord = getCoordinates(feature.getGeometry());
                     LatLng polygonCenter = getPolygonCenterPoint(coord);
@@ -199,6 +171,7 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         }
     }
 
+    // get all coordinates of the vertex of a polygon
     protected static List<LatLng> getCoordinates(Geometry geometry) {
 
         List<LatLng> coordinates = new ArrayList<>();
@@ -221,6 +194,7 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         return coordinates;
     }
 
+    // get an approximation center point of a polygon
     protected static LatLng getPolygonCenterPoint(List<LatLng> polygonPointsList){
         LatLng centerLatLng = null;
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -234,16 +208,6 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         return centerLatLng;
     }
 
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //stop location updates when Activity is no longer active
-        if (manager.getmFusedLocationClient() != null) {
-            manager.stopLocationUpdate();
-        }
-    }
 
 
     public void displaySearchBar(){
@@ -269,18 +233,12 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                /*mMap.addMarker(new MarkerOptions()
-                        .position(place.getLatLng())
-                        .title(place.getName())
-                        .icon(bitmapDescriptorFromVector(getContext(),R.drawable.ic_pin)));*/
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(),12));
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
             }
 
             @Override
             public void onError(Status status) {
-                // TODO: Handle the error.
                 Snackbar.make(getView(),"Error Occurred",Snackbar.LENGTH_SHORT);
                 Log.i(TAG, "An error occurred: " + status);
             }
@@ -300,6 +258,7 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
     }
 
     // convert SVG to Bitmap for Gmap icon
+    // used to hide marker by applying empty icon
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
         Drawable background = ContextCompat.getDrawable(context, R.drawable.empty);
         background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());

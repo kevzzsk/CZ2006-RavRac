@@ -20,59 +20,17 @@ import android.util.Log;
 public class BackgroundService extends Service {
     private final LocationServiceBinder binder = new LocationServiceBinder();
     private final String TAG = "BackgroundService";
-    private LocationListener mLocationListener;
-    private LocationManager mLocationManager;
-
-    private final int LOCATION_INTERVAL = 500;
-    private final int LOCATION_DISTANCE = 10;
 
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
     }
 
-    private class LocationListener implements android.location.LocationListener
-    {
-        private Location lastLocation = null;
-        private final String TAG = "LocationListener";
-        private Location mLastLocation;
-
-        public LocationListener(String provider)
-        {
-            mLastLocation = new Location(provider);
-        }
-
-        @Override
-        public void onLocationChanged(Location location)
-        {
-            mLastLocation = location;
-            Log.i(TAG, "LocationChanged: "+location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider)
-        {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider)
-        {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
-        {
-            Log.e(TAG, "onStatusChanged: " + status);
-        }
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

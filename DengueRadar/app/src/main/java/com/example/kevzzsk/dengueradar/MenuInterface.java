@@ -32,6 +32,8 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
     private DrawerLayout drawer;
     private EditText feedback;
 
+
+    // close menu drawer after back button is pressed
     @Override
     public void onBackPressed() {
         if(drawer.isDrawerOpen(GravityCompat.START)){
@@ -61,14 +63,14 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
             case R.id.nav_feedback:
                 handleFeedback();
                 break;
-            case R.id.nav_faq:
-                break;
         }
 
+        //
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    // show feedback box
     public void handleFeedback(){
 
         LinearLayout viewGroup = (LinearLayout) findViewById(R.id.feedback);
@@ -98,9 +100,6 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
                 changeSortPopUp.dismiss();
 
                 handleConfirm(msg.getText().toString(),title.getText().toString());
-
-
-
             }
         });
 
@@ -114,6 +113,7 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
 
     }
 
+    // show confirmation box
     private void handleConfirm(String msg,String title){
         LinearLayout viewGroup = (LinearLayout) findViewById(R.id.confirm);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -152,7 +152,6 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Dengue Radar");
 
-
         drawer = findViewById(R.id.drawerLayout);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -161,12 +160,8 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
         ActionBarDrawerToggle toggle= new ActionBarDrawerToggle(this, drawer,
                 toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
 
-        Log.d(TAG, "onCreate: drawer message!"+ String.valueOf(drawer == null) );
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-
-
 
         //set MapInterface to be default start up page
         // savedInstanceState ensures that rotating device will not switch back to default page
@@ -176,6 +171,7 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
                 navigationView.setCheckedItem(R.id.nav_map);
 
         }
+
         String message = getIntent().getStringExtra("action");
         //go to tips if user click on notification
         Log.d(TAG, "onCreate: "+message);

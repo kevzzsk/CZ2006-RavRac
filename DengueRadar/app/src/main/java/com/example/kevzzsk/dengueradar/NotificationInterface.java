@@ -19,17 +19,6 @@ public class NotificationInterface {
         this.mContext = mContext;
     }
 
-//    public static final int THRESHOLD = 3;
-
-//    public boolean isAboveThreshold(int num) {
-//        if(num > THRESHOLD) {
-//            sendNotification(num);
-//            return true;
-//        }
-//        else {
-//            return false;
-//        }
-//    }
 
     public void sendNotification() {
         createNotificationChannel();
@@ -62,8 +51,8 @@ public class NotificationInterface {
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        String title = "You are near to a dengue cluster!";
-        String message = "Click to view tips on how to prevent dengue.";
+        String title = "YOU ARE NEAR TO A DENGUE CLUSTER!";
+        String message = "Click to view tips on how to protect yourself!";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, channelId)
                 .setSmallIcon(R.drawable.alert)
                 .setContentTitle(title)

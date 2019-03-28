@@ -2,7 +2,6 @@ package com.example.kevzzsk.dengueradar;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -11,10 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
@@ -33,16 +29,11 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
@@ -59,7 +50,8 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
     private static final String TAG = "MapsManager";
     Activity mContext;
 
-    private static final int LOCATION_UPDATE_FREQUENCY = 5000; //5 s
+    private static final int LOCATION_UPDATE_FREQUENCY = 5000; //in ms
+    private static final int DANGER_RADIUS = 500; // in meter
 
 
     LocationRequest mLocationRequest;
@@ -81,11 +73,6 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
         mContext = context;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
-
-    public void setNotificationSent(boolean b){
-        notificationSent = b;
-    }
-
 
     public FusedLocationProviderClient getmFusedLocationClient() {
         return mFusedLocationClient;
@@ -158,7 +145,6 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
         // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
         SettingsClient settingsClient = LocationServices.getSettingsClient(mContext);
         settingsClient.checkLocationSettings(locationSettingsRequest);
-
 
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -239,7 +225,7 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
             if (locationList.size() > 0) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                //Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 mLastLocation = location;
                 if (mCurrLocationMarker != null) {
                     mCurrLocationMarker.remove();
@@ -280,12 +266,8 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged: Location changed!");
-        Toast.makeText(mContext,"Location is now "+ String.valueOf(location.getLatitude())+" "+String.valueOf(location.getLongitude()),Toast.LENGTH_SHORT).show();
-        /*circleOptions = new CircleOptions()
-                .center(userLoc)
-                .radius(1000)
-                .fillColor(Color.BLUE);*/
+        // every location update
+        // recalculate distance to nearest dengue cluster
         isDengueNearby(location);
     }
 
@@ -296,14 +278,22 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
 
         LatLng userLoc = new LatLng(newLocation.getLatitude(),newLocation.getLongitude());
 
+        //for debugging purpose
+        double nearest_cluster = 1000000;
+
         for(List<LatLng> polygon: allDengueCluster){
             for(LatLng vertex: polygon){
                 // returns distance in meter
-                if(SphericalUtil.computeDistanceBetween(vertex,userLoc) <= 500){
+                double dist = SphericalUtil.computeDistanceBetween(vertex,userLoc);
+                if (nearest_cluster > dist){
+                    nearest_cluster = dist;
+                }
+                if(dist <= DANGER_RADIUS){
                     // dengue cluster is within 1km
-                    Log.d(TAG, "isDengueNearby: True");
-                    Log.d(TAG, "isDengueNearby: " + SphericalUtil.computeDistanceBetween(vertex,userLoc));
-                    Toast.makeText(mContext,String.valueOf(SphericalUtil.computeDistanceBetween(vertex,userLoc)),Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "isDengueNearby: True , shortestDist: "+dist);
+                    String msg = userLoc.toString()+" shortestDist: "+String.valueOf(roundDown2(dist));
+                    Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
+
                     if(notificationSent == false) {
                         notificationInterface = new NotificationInterface(mContext);
                         notificationInterface.sendNotification();
@@ -314,6 +304,8 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
 
             }
         }
+        String msg = userLoc.toString()+" shortestDist: "+String.valueOf(roundDown2(nearest_cluster));
+        Toast.makeText(mContext,msg,Toast.LENGTH_LONG).show();
         Log.d(TAG, "isDengueNearby: False");
         notificationSent = false;
         return false;
@@ -323,12 +315,11 @@ public class MapsManager implements ActivityCompat.OnRequestPermissionsResultCal
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
-    // will return resource ID
-    public int getGeoJson(){
-        // geojson will be polled from firebase and stored locally.
-        // reduce internet usage
-
-        return R.raw.dengue_cluster;
+    // for parsing to string
+    // for debug purpose
+    public static double roundDown2(double d) {
+        return ((long)(d * 1e2)) / 1e2;
+        //Long typecast will remove the decimals
     }
 
 
