@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 
 public class MenuInterface extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -80,28 +81,60 @@ public class MenuInterface extends AppCompatActivity implements NavigationView.O
         changeSortPopUp.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
         changeSortPopUp.setFocusable(true);
 
-        // Some offset to align the popup a bit to the left, and a bit down, relative to button's position.
-        int OFFSET_X = -20;
-        int OFFSET_Y = 95;
 
         // clear default transcluscent background
         changeSortPopUp.setBackgroundDrawable(new BitmapDrawable());
 
         changeSortPopUp.showAtLocation(layout, Gravity.CENTER, 0,0);
 
-        EditText msg = (EditText) layout.findViewById(R.id.feedback_body);
-        EditText title = (EditText) layout.findViewById(R.id.feedback_title);
+        final EditText msg = (EditText) layout.findViewById(R.id.feedback_body);
+        final EditText title = (EditText) layout.findViewById(R.id.feedback_title);
         Button submit = (Button) layout.findViewById(R.id.submit_button);
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // send to firebase
+                FeedbackStore.saveNote(msg.getText().toString(),title.getText().toString());
+                changeSortPopUp.dismiss();
+
+                handleConfirm(msg.getText().toString(),title.getText().toString());
+
+
+
             }
         });
 
         Button cancel = (Button) layout.findViewById(R.id.cancel_button);
         cancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                changeSortPopUp.dismiss();
+            }
+        });
+
+    }
+
+    private void handleConfirm(String msg,String title){
+        LinearLayout viewGroup = (LinearLayout) findViewById(R.id.confirm);
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.confirmation_popup, viewGroup);
+
+        final PopupWindow changeSortPopUp = new PopupWindow();
+        changeSortPopUp.setContentView(layout);
+        changeSortPopUp.setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
+        changeSortPopUp.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
+        changeSortPopUp.setFocusable(true);
+        changeSortPopUp.setBackgroundDrawable(new BitmapDrawable());
+        changeSortPopUp.showAtLocation(layout, Gravity.CENTER, 0,0);
+
+
+        TextView t = (TextView) layout.findViewById(R.id.confirm_title);
+        t.setText(title);
+        TextView m = (TextView) layout.findViewById(R.id.confirm_body);
+        m.setText(msg);
+
+        Button button = (Button) layout.findViewById(R.id.confirm_button);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeSortPopUp.dismiss();
