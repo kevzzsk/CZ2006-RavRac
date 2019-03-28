@@ -67,9 +67,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
-
-public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowClickListener,OnMapReadyCallback,GoogleMap.OnInfoWindowCloseListener {
+public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, GoogleMap.OnInfoWindowCloseListener {
     // use getActivity() to replace this as the context
     // This is due to MapsInterface being just a fragment, hence context
     // need to be taken from the "parent" (MenuInterface)
@@ -77,25 +75,22 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
     GoogleMap mMap;
     MapsManager manager;
     List<List> allDengueCluster = new ArrayList<>();
-    private LocationManager locManager;
-    private LocationListener locListener;
-    private Location mobileLocation;
-    private String provider;
 
     private static final String TAG = "MapsInterface";
 
     private static final LatLng sg = new LatLng(1.3521, 103.8198);
 
 
-    public MapsInterface(){
+    public MapsInterface() {
 
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.map_fragment,container,false);
+        View v = inflater.inflate(R.layout.map_fragment, container, false);
         manager = new MapsManager(getActivity());
+        manager.initializeUserLocation();
         return v;
     }
 
@@ -121,9 +116,16 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnInfoWindowCloseListener(this);
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getActivity()));
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            mMap.setMyLocationEnabled(true);
+        }
+       //mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-        manager.initializeUserLocation(mMap);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
         alignRecenterButton();
 
         createGeoJsonLayer();
@@ -131,6 +133,12 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //mMap.setMyLocationEnabled(true);
+    }
 
     private void alignRecenterButton(){
         //
@@ -139,7 +147,7 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         // position on right bottom
         rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
         rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        rlp.setMargins(0, 0, 30, 30);
+        rlp.setMargins(0, 0, 0, 250);
     }
 
 
@@ -279,6 +287,17 @@ public class MapsInterface extends Fragment implements GoogleMap.OnInfoWindowCli
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // check if service is bounded
+        if (manager.isServicebounded()) {
+            // unbind and stop service after
+            getActivity().unbindService(manager.getServiceConnection());
+            getActivity().stopService(manager.getmRequestLocationUpdatesIntent());
+            Log.d(TAG, "onDestroy: ServiceConnection destroyed!");
+        }
+    }
 
     // convert SVG to Bitmap for Gmap icon
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {

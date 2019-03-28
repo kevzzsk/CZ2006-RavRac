@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/feedback"
+    android:layout_gravity="center"
+    android:background="@drawable/black_bg">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Feedback Form"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/feedback_title"
+        android:inputType="text"
+        android:maxLines="1"
+        android:ems="14"
+        android:hint="Title"
+        android:backgroundTint="@color/colorAccent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+
+    <EditText
+        android:id="@+id/feedback_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="14"
+        android:inputType="textMultiLine"
+        android:lines="5"
+        android:hint="Enter Feedback"
+        android:backgroundTint="@color/colorAccent"
+        android:layout_marginBottom="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp">
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="end"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/cancel_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="end"/>
+    </LinearLayout>
+
+</LinearLayout>
