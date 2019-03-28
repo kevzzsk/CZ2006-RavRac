@@ -37,8 +37,9 @@ public class DatabaseViewer {
     private CollectionReference TipReference =db.collection("Tips");
     private CollectionReference StatsReference = db.collection("Statistics");
 
-    public DatabaseViewer(boolean queryTips, Object object){
-        if(queryTips){
+    public DatabaseViewer(int queryType, Object object){
+        //0 for Tips, 1 for Stats, 2 for Map
+        if(queryType == 0){
             loadTips((TipsInterface)object);
         }
         else {
