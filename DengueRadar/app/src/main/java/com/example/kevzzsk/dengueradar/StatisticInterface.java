@@ -83,7 +83,7 @@ public class StatisticInterface extends Fragment {
             Date startDate = c.getTime();
             c.add(Calendar.DATE, 6);
             Date endDate = c.getTime();
-            text = dateFormat.format(startDate) + " to " + dateFormat.format(endDate);
+            text = "      " + dateFormat.format(startDate) +"      \n" + "~" + "\n      " + dateFormat.format(endDate) + "      ";
         }
         else{
             Date currentDate = new Date();
@@ -145,15 +145,15 @@ public class StatisticInterface extends Fragment {
     private void displayNoOfCases(int noOfCases){
         TextView textView = getView().findViewById(R.id.textViewNum);
         String text = "";
-        if(noOfCases < 10){
-            text+=" ";
-        }
-        if(noOfCases > 99){
-            textView.setTextSize(80);
-        }
-        else{
-            textView.setTextSize(130);
-        }
+//        if(noOfCases < 10){
+//            text+=" ";
+//        }
+//        if(noOfCases > 99){
+//            textView.setTextSize(80);
+//        }
+//        else{
+//            textView.setTextSize(130);
+//        }
         text += noOfCases;
         textView.setText(text);
     }
@@ -347,5 +347,4 @@ public class StatisticInterface extends Fragment {
         drawGraph(monthlyData);
         displayText(monthlyData[monthlyData.length-1].getNumber(), monthlyData.length, state);
     }
-
 }
