@@ -36,15 +36,10 @@ public class TipsInterface extends Fragment {
     }
 
     @Override
-<<<<<<< HEAD
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        displayTips();
-=======
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         startLoadingTips();
->>>>>>> master
+        displayTips(tips);
     }
 
     public void displayTips(ArrayList<Tip> tips){
