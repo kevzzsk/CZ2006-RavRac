@@ -1,11 +1,14 @@
 package com.example.kevzzsk.dengueradar;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +17,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+
 import static android.util.TypedValue.COMPLEX_UNIT_SP;
 
 public class TipsInterface extends Fragment {
-    private DummyTip[] tips = new DummyTip[5];
+    private ArrayList<Tip> tips = new ArrayList<Tip>();
 
     @Nullable
     @Override
@@ -27,27 +36,45 @@ public class TipsInterface extends Fragment {
     }
 
     @Override
+<<<<<<< HEAD
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         displayTips();
+=======
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        startLoadingTips();
+>>>>>>> master
     }
 
-    public void displayTips(){
-        for(int i=0; i<5; i++){
-            tips[i] = new DummyTip("Heading"+i);
-            createImageView(i);
-            createTextView(tips[i].heading, i);
+    public void displayTips(ArrayList<Tip> tips){
+        for(int i=0; i<tips.size(); i++){
+            //test
+            Log.d("image", tips.get(i).img);
+            createImageView(tips.get(i).img, i);
+            createTextView(tips.get(i).heading, i);
         }
     }
 
-    public void createImageView(int id){
+    public void startLoadingTips(){
+        new DatabaseViewer(true, this);
+    }
+
+
+    public void finishLoadingTips(ArrayList<Tip> tips){
+        this.tips = tips;
+        displayTips(tips);
+    }
+
+    public void createImageView(String url, int id){
         ImageView imageView = new ImageView(getActivity());
-        //TODO control the img
-        imageView.setImageResource(R.drawable.empty);
+        //set image from url
+        new DownloadImageTask(imageView).execute(url);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         imageView.setClickable(true);
         imageView.setFocusable(true);
         imageView.setId(id);
+//        imageView.setId(id);
 //        imageView.setMaxHeight(50);
 //        imageView.setMinimumHeight(50);
 //        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
@@ -61,7 +88,7 @@ public class TipsInterface extends Fragment {
             public void onClick(View v) {
 //                Log.d("debug", ""+v.getId());
                 Intent intent = new Intent(getActivity(), TipDetailsInterface.class);
-                intent.putExtra("tip", tips[v.getId()]);
+                intent.putExtra("tip", tips.get(v.getId()));
                 startActivity(intent);
             }
         });
@@ -76,7 +103,7 @@ public class TipsInterface extends Fragment {
         textView.setGravity(Gravity.CENTER_HORIZONTAL);
         textView.setClickable(true);
         textView.setFocusable(true);
-        textView.setTextSize(COMPLEX_UNIT_SP, 50);
+        textView.setTextSize(COMPLEX_UNIT_SP, 30);
         textView.setId(id);
 
 //        textView.setMaxHeight(100);
@@ -92,7 +119,7 @@ public class TipsInterface extends Fragment {
             public void onClick(View v) {
 //                Log.d("debug", ""+v.getId());
                 Intent intent = new Intent(getActivity(), TipDetailsInterface.class);
-                intent.putExtra("tip", tips[v.getId()]);
+                intent.putExtra("tip", tips.get(v.getId()));
                 startActivity(intent);
             }
         });

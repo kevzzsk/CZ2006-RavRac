@@ -12,15 +12,15 @@ public class TipDetailsInterface extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tipdetail);
-        DummyTip tip = (DummyTip)getIntent().getSerializableExtra("tip");
+        Tip tip = (Tip)getIntent().getSerializableExtra("tip");
         displayHeading(tip.heading);
         displayContent(tip.content);
-        displayImage();
+        displayImage(tip.img);
     }
 
     public void displayHeading(String heading){
         TextView tv = findViewById(R.id.topHeading);
-        Log.d("debug", heading);
+        //Log.d("debug", heading);
         tv.setText(heading);
     }
 
@@ -29,9 +29,8 @@ public class TipDetailsInterface extends AppCompatActivity {
         tv.setText(content);
     }
 
-    public void displayImage(){
+    public void displayImage(String url){
         ImageView iv = findViewById(R.id.imageView);
-        //TODO
-        iv.setImageResource(R.drawable.empty);
+        new DownloadImageTask(iv).execute(url);
     }
 }

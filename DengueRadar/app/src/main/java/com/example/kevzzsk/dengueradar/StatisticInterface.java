@@ -22,14 +22,15 @@ import com.jjoe64.graphview.series.OnDataPointTapListener;
 import com.jjoe64.graphview.series.Series;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 public class StatisticInterface extends Fragment {
 
     private LineGraphSeries<DataPoint> series;
-    private int[] monthlyData = createDummyData(STATE.MONTHLY);
-    private int[] weeklyData = createDummyData(STATE.WEEKLY);
+    private DengueStatistic[] monthlyData = new DengueStatistic[12];
+    private DengueStatistic[] weeklyData = new DengueStatistic[52];
     private enum STATE{
         WEEKLY, MONTHLY
     }
@@ -51,17 +52,17 @@ public class StatisticInterface extends Fragment {
     private void setStateToMonthly(){
         state = STATE.MONTHLY;
         TextView textViewWeekly = getView().findViewById(R.id.textViewWeekly);
-        textViewWeekly.setTextColor(getResources().getColor(R.color.textDefault));
+        textViewWeekly.setTextColor(getResources().getColor(R.color.textNotSelected));
         TextView textViewMonthly = getView().findViewById(R.id.textViewMonthly);
-        textViewMonthly.setTextColor(getResources().getColor(R.color.textSelected));
+        textViewMonthly.setTextColor(getResources().getColor(R.color.textDefault));
     }
 
     private void setStateToWeekly(){
         state = STATE.WEEKLY;
         TextView textViewWeekly = getView().findViewById(R.id.textViewWeekly);
-        textViewWeekly.setTextColor(getResources().getColor(R.color.textSelected));
+        textViewWeekly.setTextColor(getResources().getColor(R.color.textDefault));
         TextView textViewMonthly = getView().findViewById(R.id.textViewMonthly);
-        textViewMonthly.setTextColor(getResources().getColor(R.color.textDefault));
+        textViewMonthly.setTextColor(getResources().getColor(R.color.textNotSelected));
     }
 
     public void displayText(int noOfCases, int x, STATE state){
@@ -82,7 +83,7 @@ public class StatisticInterface extends Fragment {
             Date startDate = c.getTime();
             c.add(Calendar.DATE, 6);
             Date endDate = c.getTime();
-            text = dateFormat.format(startDate) + " to " + dateFormat.format(endDate);
+            text = "      " + dateFormat.format(startDate) +"      \n" + "~" + "\n      " + dateFormat.format(endDate) + "      ";
         }
         else{
             Date currentDate = new Date();
@@ -144,38 +145,19 @@ public class StatisticInterface extends Fragment {
     private void displayNoOfCases(int noOfCases){
         TextView textView = getView().findViewById(R.id.textViewNum);
         String text = "";
-        if(noOfCases < 10){
-            text+=" ";
-        }
+//        if(noOfCases < 10){
+//            text+=" ";
+//        }
+//        if(noOfCases > 99){
+//            textView.setTextSize(80);
+//        }
+//        else{
+//            textView.setTextSize(130);
+//        }
         text += noOfCases;
         textView.setText(text);
     }
 
-    private int[] createDummyData(STATE state){
-        int size;
-        if(state == STATE.MONTHLY){
-            size = 12;
-        }
-        else{
-            size = 52;
-        }
-        //create dummy data
-        int[] dummyData = new int[size];
-        for(int i=0; i<size; i++){
-            dummyData[i] = (int)(Math.random() * 16);
-        }
-        return dummyData;
-    }
-
-    public int getMax(int[] array){
-        int max = array[0];
-        for(int i=1; i<array.length; i++){
-            if(array[i] > max){
-                max = array[i];
-            }
-        }
-        return max;
-    }
 
     public void initializeGraph(){
         //create graph object
@@ -198,16 +180,34 @@ public class StatisticInterface extends Fragment {
         });
     }
 
-    public void drawGraph(int[] data){
+    public void drawGraph(DengueStatistic[] data){
         int maxY, maxX, minY, minX;
 
         //clear old graph if any
         GraphView graph = getView().findViewById(R.id.graph);
         graph.removeAllSeries();
 
-        minY = 0;
-        maxY = getMax(data) + 1;
+        minY = data[0].getNumber();
+        for(int i=0; i<data.length; i++){
+            int y = data[i].getNumber();
+            if(y < minY){
+                minY = y;
+            }
+        }
+
+        maxY = 0;
+        for(int i=0; i<data.length; i++){
+            int y = data[i].getNumber();
+            if(y > maxY){
+                maxY = y;
+            }
+
+        }
+        //adjust height
+        minY -= 2;
+        maxY += 2;
         minX = 0;
+        //adjust width
         maxX = data.length + 1;
 
         //control view port
@@ -221,12 +221,14 @@ public class StatisticInterface extends Fragment {
 
         if(state == STATE.WEEKLY){
             graph.getGridLabelRenderer().setNumHorizontalLabels(maxX/5);
+            graph.getGridLabelRenderer().setNumVerticalLabels((maxY-minY)/5);
         }
         else{
             graph.getGridLabelRenderer().setNumHorizontalLabels(maxX);
+            graph.getGridLabelRenderer().setNumVerticalLabels((maxY-minY)/10);
         }
 
-        graph.getGridLabelRenderer().setNumVerticalLabels(maxY);
+
 
         //create data series
         series = new LineGraphSeries<>();
@@ -248,7 +250,7 @@ public class StatisticInterface extends Fragment {
 
         //put data into graph point series
         for(int i=0; i<data.length; i++){
-            series.appendData(new DataPoint(i+1, data[i]), true, data.length);
+            series.appendData(new DataPoint(i+1, data[i].getNumber()), true, data.length);
         }
 
         graph.addSeries(series);
@@ -263,13 +265,86 @@ public class StatisticInterface extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //start loading data
+        startLoadingStats();
+    }
+
+    public void startLoadingStats(){
+        new DatabaseViewer(false, this);
+    }
+
+    public void finishLoadingStats(ArrayList<DengueStatistic> statsArray){
         //initialize switch
         Switch mySwitch = getView().findViewById(R.id.switch1);
         mySwitch.setChecked(true);
 
         setStateToMonthly();
+
+        //initialize graph
         initializeGraph();
+
+        for(int i=0; i<52; i++){
+            weeklyData[51-i] = statsArray.get(statsArray.size()-i-1);
+            //test
+            Log.d("weekly", ""+weeklyData[51-i].getDate());
+        }
+        for(int i=0; i<12; i++){
+            int num = 0;
+            for(int j=0; j<5; j++){
+                num += statsArray.get(statsArray.size()-4*i-j-1).getNumber();
+            }
+            monthlyData[11-i] = new DengueStatistic();
+            monthlyData[11-i].setNumber(num);
+
+            Date currentDate = new Date();
+            // convert date to calendar
+            Calendar c = Calendar.getInstance();
+            c.setTime(currentDate);
+            c.add(Calendar.MONTH, -(i));
+            Date date = c.getTime();
+            String text = "";
+            switch(date.getMonth()){
+                case 0:
+                    text = "Jan";
+                    break;
+                case 1:
+                    text = "Feb";
+                    break;
+                case 2:
+                    text = "Mar";
+                    break;
+                case 3:
+                    text = "Apr";
+                    break;
+                case 4:
+                    text = "May";
+                    break;
+                case 5:
+                    text = "Jun";
+                    break;
+                case 6:
+                    text = "Jul";
+                    break;
+                case 7:
+                    text = "Aug";
+                    break;
+                case 8:
+                    text = "Sep";
+                    break;
+                case 9:
+                    text = "Oct";
+                    break;
+                case 10:
+                    text = "Nov";
+                    break;
+                case 11:
+                    text = "Dec";
+                    break;
+            }
+            monthlyData[11-i].setDate(text);
+        }
+
         drawGraph(monthlyData);
-        displayText(monthlyData[monthlyData.length-1], monthlyData.length, state);
+        displayText(monthlyData[monthlyData.length-1].getNumber(), monthlyData.length, state);
     }
 }
