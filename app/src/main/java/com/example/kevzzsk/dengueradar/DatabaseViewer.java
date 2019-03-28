@@ -48,15 +48,16 @@ public class DatabaseViewer extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    int count =0;
+                    TipsArray.clear();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Tips tips = document.toObject(Tips.class);
+                        tips.title = document.getId().toString();
                         TipsArray.add(tips);
-                        dataParsed = dataParsed + TipsArray.get(count).Content.toString()+"\n";
-                        count++;
+
+
 
                     }
-                    Log.d("MAINACTIVITY",dataParsed);
+                    //Log.d("MAINACTIVITY",dataParsed);
 
 
                 } else {
@@ -73,15 +74,15 @@ public class DatabaseViewer extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    int count =0;
+                    StatsArray.clear();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Statistics stats = document.toObject(Statistics.class);
+                        stats.date =document.getId().toString().substring(0,4);
+                        stats.week = document.getId().toString().substring(6,8);
                         StatsArray.add(stats);
-                        dataParsed = dataParsed + StatsArray.get(count).NumberOfCase.toString()+"\n";
-                        count++;
+
 
                     }
-                    Log.d("MAINACTIVITY",dataParsed);
 
                 } else {
                     Toast.makeText(DatabaseViewer.this, "query fail check log", Toast.LENGTH_SHORT).show();

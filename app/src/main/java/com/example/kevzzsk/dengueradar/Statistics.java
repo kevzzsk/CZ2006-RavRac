@@ -10,6 +10,8 @@ import java.util.Date;
 
 public class Statistics{
     public Object NumberOfCase;
+    public String date;
+    public String week;
 
 
     public Statistics() {
