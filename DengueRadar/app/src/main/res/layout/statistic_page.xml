@@ -1,144 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.kevzzsk.dengueradar.MenuInterface">
+    android:orientation="vertical"
+    tools:context="com.example.kevzzsk.dengueradar.MenuInterface"
+   >
 
-    <com.jjoe64.graphview.GraphView
-        android:id="@+id/graph"
-        android:layout_width="360dp"
-        android:layout_height="433dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <android.support.constraint.Constraints
-        android:id="@+id/constraints"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:ignore="MissingConstraints" />
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp">
 
-    <TextView
-        android:id="@+id/textViewNum"
-        android:layout_width="145dp"
-        android:layout_height="130dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="16dp"
-        android:autoSizeTextType="uniform"
-        android:gravity="center|bottom"
-        android:includeFontPadding="false"
-        android:text=" "
-        android:textColor="@color/textDefault"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="fill"
+            >
 
-    <TextView
-        android:id="@+id/cases"
-        android:layout_width="105dp"
-        android:layout_height="25dp"
-        android:gravity="center"
-        android:text="case"
-        android:textColor="@color/textNotSelected"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="@+id/textViewNum"
-        app:layout_constraintStart_toStartOf="@+id/textViewNum"
-        app:layout_constraintTop_toBottomOf="@+id/textViewNum" />
+            <TextView
+                android:layout_weight="2"
+                android:id="@+id/textViewNum"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center|bottom"
+                android:gravity="center|bottom"
+                android:includeFontPadding="false"
+                android:textSize="60sp"
+                android:textColor="@color/textDefault" />
 
-    <TextView
-        android:id="@+id/textViewDate"
-        android:layout_width="145dp"
-        android:layout_height="130dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:textSize="60dp"
-        android:gravity="center|bottom"
-        android:lineSpacingMultiplier="0.6"
-        android:maxLines="3"
-        android:text=""
-        android:textColor="@color/textDefault"
-        app:layout_constraintBottom_toTopOf="@+id/cases"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textViewNum"
-        app:layout_constraintVertical_bias="0.0" />
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/cases"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:text="case(s)"
+                android:textColor="@color/textNotSelected"
+                android:textSize="20sp" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            >
 
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="70dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:checked="true"
-        android:switchMinWidth="70dp"
-        android:textColor="@color/textDefault"
-        android:thumbTint="@color/whiteLessB"
-        android:trackTint="#0090AA"
-        app:layout_constraintBottom_toTopOf="@+id/graph"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cases"
-        app:layout_constraintVertical_bias="0.984" />
+            <TextView
+                android:layout_weight="2"
+                android:id="@+id/textViewDate"
+                android:layout_width="150dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:gravity="center|bottom"
+                android:maxLines="3"
+                android:textColor="@color/textDefault"
+                android:autoSizeTextType="uniform"
+                android:textSize="60sp" />
 
-    <TextView
-        android:id="@+id/textViewWeekly"
-        android:layout_width="77dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
-        android:text="WEEKLY"
-        android:textColor="@color/textNotSelected"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/switch1"
-        app:layout_constraintEnd_toStartOf="@+id/switch1"
-        app:layout_constraintHorizontal_bias="0.852"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewMonthly"
-        android:layout_width="96dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:text="MONTHLY"
-        android:textColor="@color/textDefault"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/switch1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.325"
-        app:layout_constraintStart_toEndOf="@+id/switch1" />
-
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="105dp"
-        android:layout_height="25dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:text="time"
-        android:textColor="@color/textNotSelected"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/cases"
-        app:layout_constraintEnd_toEndOf="@+id/textViewDate"
-        app:layout_constraintHorizontal_bias="0.511"
-        app:layout_constraintStart_toStartOf="@+id/textViewDate"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDate"
-        app:layout_constraintVertical_bias="0.0" />
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:text="time"
+                android:textColor="@color/textNotSelected"
+                android:textSize="20sp" />
 
 
-</android.support.constraint.ConstraintLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="15dp"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <TextView
+            android:layout_weight="2"
+            android:id="@+id/textViewWeekly"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="WEEKLY"
+            android:textColor="@color/textNotSelected"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:switchMinWidth="70dp"
+            android:textColor="@color/textDefault"
+            android:thumbTint="@color/whiteLessB"
+            android:trackTint="#0090AA"
+            android:layout_gravity="center"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:id="@+id/textViewMonthly"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="MONTHLY"
+            android:textColor="@color/textDefault"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            />
+
+
+</LinearLayout>
