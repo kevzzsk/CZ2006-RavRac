@@ -316,7 +316,7 @@ public class StatisticInterface extends Fragment {
     }
 
     public void startLoadingStats(){
-        new DatabaseViewer(false, this);
+        new DatabaseViewer(0, this);
     }
 
     public void finishLoadingStats(ArrayList<DengueStatistic> statsArray){
