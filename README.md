@@ -1,6 +1,6 @@
 # CZ2006-RavRac
 Software Engineering Project 
-
+Last Tested: 29/03/2019
 # Dengue Radar
 This is our project which is done in mainly Android Java + Firebase.
 
@@ -14,3 +14,6 @@ Design of the app strictly follows good design architecture and practices. We pr
 1. Download Android Studio
 2. Clone the Repo
 3. Run in Android Studio with Android Emulator (must have Google Play service)
+
+
+### ps. Removed Google Api Key for security reasons.
